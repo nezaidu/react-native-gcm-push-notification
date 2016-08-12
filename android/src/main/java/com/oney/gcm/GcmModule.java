@@ -56,11 +56,11 @@ public class GcmModule extends ReactContextBaseJavaModule implements LifecycleEv
             editor.apply();
         }
 
-        if (mIntent == null) {
+        // if (mIntent == null) {
             listenGcmRegistration();
             listenGcmReceiveNotification();
             getReactApplicationContext().addLifecycleEventListener(this);
-        }
+        // }
     }
 
     @Override
@@ -72,12 +72,27 @@ public class GcmModule extends ReactContextBaseJavaModule implements LifecycleEv
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
         if (mIntent != null) {
-            Bundle bundle = mIntent.getBundleExtra("bundle");
-            String bundleString = convertJSON(bundle);
-            Log.d(TAG, "bundleString: " + bundleString);
-            constants.put("initialNotification", bundleString);
+            if(mIntent.getExtras() != null) {
+                Map<String, Object> extra = new HashMap<>();
+                Bundle data = mIntent.getExtras();
+                // Set<String> keysIterator = data.keySet();
+                // for(String key: keysIterator){
+                //     extra.put(key, data.get(key));
+                // }
+                constants.put("initialNotification", convertJSON(data));
+            }
+            constants.put("initialAction", mIntent.getAction());
         }
         return constants;
+        // if (mIntent != null) {
+        //     if (mIntent.getExtras() != null) {
+        //         // Bundle bundle = mIntent.getBundleExtra("bundle");
+        //         // String bundleString = convertJSON(bundle);
+        //         // Log.d(TAG, "bundleString: " + bundleString);
+        //         // constants.put("initialNotification", bundleString);
+        //     }
+        // }
+        // return constants;
     }
 
     private void sendEvent(String eventName, Object params) {
@@ -94,6 +109,7 @@ public class GcmModule extends ReactContextBaseJavaModule implements LifecycleEv
             public void onReceive(Context context, Intent intent) {
                 Bundle bundle = intent.getExtras();
                 boolean success = bundle.getBoolean("success");
+
                 if (success) {
                     String token = bundle.getString("token");
                     WritableMap params = Arguments.createMap();
