@@ -43,9 +43,9 @@ public class GcmModule extends ReactContextBaseJavaModule implements LifecycleEv
     private boolean mIsInForeground;
     private String registrationToken;
 
-    public GcmModule(ReactApplicationContext reactContext, Intent intent) {
+    public GcmModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        mIntent = intent;
+        mIntent = getCurrentActivity().getIntent();
 
         Log.d(TAG, "mIntent is null: " + (mIntent == null));
 
